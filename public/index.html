@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Church Camping Trip — Silver Creek, August 28–30</title>
+<meta name="description" content="Table Rock Church camping trip at Silver Creek Campground, August 28–30, 2026. Sign up to join us for a weekend of fellowship in the mountains." />
+<meta property="og:title" content="Church Camping Trip — August 28–30, 2026" />
+<meta property="og:description" content="Table Rock Church camping trip at Silver Creek Campground. A weekend together in the woods." />
+<meta property="og:image" content="/assets/creek.webp" />
+<meta property="og:type" content="website" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛺</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap" />
+<style>
+  :root {
+    --ink: #1A1F2A;
+    --ink-soft: #3F4754;
+    --ink-mute: #6B7280;
+    --paper: #FFFFFF;
+    --cream: #F7F4EE;
+    --accent-red: #E63B2E;
+    --accent-red-deep: #B32A20;
+    --gold: #C8A24B;
+    --rule: #E5E1D9;
+    --font-display: "Montserrat", system-ui, sans-serif;
+    --font-body: "Source Sans 3", system-ui, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.6}
+  img{display:block;max-width:100%}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+
+  /* Hero */
+  .hero{
+    position:relative;
+    height:clamp(280px, 42vw, 460px);
+    background:#1a1f2a url("/assets/creek.webp") center/cover no-repeat;
+    color:var(--paper);
+    display:flex;align-items:flex-end;
+    border-bottom:4px solid var(--accent-red);
+  }
+  .hero::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(to bottom, rgba(0,0,0,0) 30%, rgba(0,0,0,.65) 100%);
+  }
+  .hero .inner{position:relative;z-index:2;padding:32px 0}
+  .hero .org{
+    font-family:var(--font-display);font-weight:700;font-size:11px;
+    letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.85);
+    display:flex;align-items:center;gap:12px;margin-bottom:14px;
+  }
+  .hero .org img{height:28px;width:auto}
+  .hero h1{
+    font-family:var(--font-display);font-weight:800;
+    font-size:clamp(32px,5.5vw,52px);line-height:1.05;letter-spacing:-.01em;
+    margin:0 0 8px;color:var(--paper);text-wrap:balance;
+  }
+  .hero .when{
+    font-family:var(--font-display);font-weight:600;font-size:clamp(15px,2vw,18px);
+    color:rgba(255,255,255,.92);
+  }
+
+  /* Sticky nav */
+  nav.anchor{
+    position:sticky;top:0;z-index:10;
+    background:var(--paper);
+    border-bottom:1px solid var(--rule);
+  }
+  nav.anchor ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap}
+  nav.anchor li{margin:0}
+  nav.anchor a{
+    display:block;padding:14px 18px;
+    font-family:var(--font-display);font-weight:700;
+    font-size:13px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--ink-soft);text-decoration:none;
+    border-bottom:3px solid transparent;margin-bottom:-1px;
+  }
+  nav.anchor a:hover{color:var(--ink)}
+  nav.anchor a.active{color:var(--ink);border-bottom-color:var(--accent-red)}
+  @media (max-width:560px){
+    nav.anchor ul{display:grid;grid-template-columns:repeat(2,1fr)}
+    nav.anchor a{padding:12px 14px;font-size:12px;text-align:center;border:1px solid var(--rule);margin:-1px 0 0 -1px}
+    nav.anchor a.active{background:var(--cream)}
+  }
+
+  /* Sections */
+  section{padding:48px 0;border-bottom:1px solid var(--rule)}
+  section:last-of-type{border-bottom:none}
+  section h2{font-family:var(--font-display);font-weight:700;font-size:26px;margin:0 0 8px;letter-spacing:-.005em}
+  section .kicker{
+    font-family:var(--font-display);font-weight:700;font-size:11px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--accent-red);margin:0 0 6px;
+  }
+  section h3{
+    font-family:var(--font-display);font-weight:700;font-size:15px;
+    text-transform:uppercase;letter-spacing:.06em;margin:24px 0 8px;color:var(--ink);
+  }
+  section p{margin:0 0 14px;color:var(--ink);max-width:62ch}
+  section ul{margin:0 0 14px;padding-left:20px}
+  section li{margin-bottom:5px}
+
+  /* Definition list */
+  .dl{display:grid;grid-template-columns:160px 1fr;gap:10px 20px;margin:16px 0 0}
+  .dl dt{font-family:var(--font-display);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);padding-top:2px}
+  .dl dd{margin:0;color:var(--ink)}
+  @media (max-width:560px){.dl{grid-template-columns:1fr;gap:2px 0}.dl dd{margin-bottom:10px}}
+
+  /* Note */
+  .note{background:var(--cream);border-left:3px solid var(--accent-red);padding:14px 18px;margin:16px 0;font-size:15.5px;max-width:62ch}
+  .note strong{font-family:var(--font-display);font-size:12px;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+
+  /* Photos */
+  .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:18px 0}
+  .photos figure{margin:0;position:relative;overflow:hidden}
+  .photos img{aspect-ratio:1/1;object-fit:cover;width:100%;display:block}
+  .photos figcaption{
+    position:absolute;left:8px;bottom:8px;
+    background:rgba(0,0,0,.7);color:var(--paper);
+    font-family:var(--font-display);font-weight:700;font-size:10px;
+    letter-spacing:.08em;text-transform:uppercase;padding:5px 9px;
+  }
+  @media (max-width:560px){.photos{grid-template-columns:1fr 1fr}}
+  .photos.two{grid-template-columns:1fr 1fr}
+  .photos.two img{aspect-ratio:4/3}
+  @media (max-width:560px){.photos.two{grid-template-columns:1fr}}
+
+  /* Map */
+  .map{margin:18px 0;border:1px solid var(--rule);background:var(--cream);padding:8px}
+  .map img{width:100%;height:auto;display:block}
+  .map figcaption{font-family:var(--font-display);font-size:12px;letter-spacing:.06em;color:var(--ink-soft);text-transform:uppercase;text-align:center;padding:8px 0 4px}
+
+  /* Form */
+  form{max-width:560px}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+  .field label{font-family:var(--font-display);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+  .field input,.field select,.field textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--rule);border-radius:2px;background:var(--paper)}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent-red)}
+  .field textarea{min-height:88px;resize:vertical}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:560px){.form-row{grid-template-columns:1fr;gap:0}}
+  button.submit{
+    background:var(--ink);color:var(--paper);border:none;
+    padding:14px 28px;font-family:var(--font-display);font-weight:700;
+    font-size:13px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
+    transition:background 150ms ease;
+  }
+  button.submit:hover{background:#000}
+  button.submit:disabled{opacity:.6;cursor:not-allowed}
+
+  /* Form states */
+  .form-status{margin-top:16px;padding:14px 18px;font-size:15px;display:none}
+  .form-status.success{display:block;background:#e8f5e9;border-left:3px solid #2e7d32;color:#1b5e20}
+  .form-status.error{display:block;background:#fbe9e7;border-left:3px solid var(--accent-red);color:var(--accent-red-deep)}
+
+  /* Honeypot */
+  .hp{position:absolute;left:-9999px;top:-9999px}
+
+  /* Footer */
+  footer{background:var(--ink);color:rgba(255,255,255,.7);padding:28px 0;font-size:13px;text-align:center}
+  footer a{color:var(--paper)}
+  a{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+  a:hover{color:var(--accent-red)}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap inner">
+    <div class="org">
+      <img src="/assets/tablerock-logo-white.png" alt="Table Rock Church" />
+      Table Rock Church
+    </div>
+    <h1>Church Camping Trip</h1>
+    <div class="when">Friday, August 28 – Sunday, August 30, 2026 · Silver Creek Campground</div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="anchor" aria-label="Sections">
+  <div class="wrap">
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#stay">Where to Stay</a></li>
+      <li><a href="#area">The Area</a></li>
+      <li><a href="#bring">What to Bring</a></li>
+      <li><a href="#signup">Sign Up</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="wrap">
+    <p class="kicker">About the Trip</p>
+    <h2>A weekend together in the woods</h2>
+    <p>This is simply a chance for our church to be together. There is no program — just space to fellowship, share meals, worship around the fire, and enjoy the mountains as a church family.</p>
+    <p>The church has reserved the group campsite. Come tent, bring an RV, or rent a cabin from the Plunge if you'd rather sleep indoors.</p>
+
+    <dl class="dl">
+      <dt>Dates</dt><dd>Friday, August 28 – Sunday, August 30, 2026</dd>
+      <dt>Arrival</dt><dd>After 2:00 PM Friday</dd>
+      <dt>Departure</dt><dd>By 12:00 PM Sunday</dd>
+      <dt>Location</dt><dd>Silver Creek Campground, Boise National Forest (about 2 hours north of Boise)</dd>
+      <dt>Group site</dt><dd>Cabin Creek (G002), reserved for our church · holds up to 80</dd>
+      <dt>On site</dt><dd>Picnic tables, fire rings, vault toilets, drinking water · No hookups · No showers · No cell service</dd>
+      <dt>Cost</dt><dd>$10 per person or $20 per family — covers our share of the group site only</dd>
+    </dl>
+
+    <div class="note">
+      <strong>What the cost covers</strong>
+      Your contribution helps cover the church-reserved campsite. Anything from Silver Creek Plunge — pool day passes, cabin or A-frame rentals, store purchases — you book and pay for yourself, directly with the Plunge.
+    </div>
+  </div>
+</section>
+
+<!-- WHERE TO STAY -->
+<section id="stay">
+  <div class="wrap">
+    <p class="kicker">Where to Stay</p>
+    <h2>Three options</h2>
+
+    <h3>Tent in the group site</h3>
+    <p>Pitch your tent in our reserved area. Picnic table and fire ring at every spot. Covered by the $10 / $20 contribution.</p>
+
+    <h3>RV or trailer in the group site</h3>
+    <p>Park in our reserved area. No hookups — self-contained rigs only. Generators allowed 9 AM – 9 PM. Covered by the $10 / $20 contribution.</p>
+
+    <h3>Cabin or A-frame at the Plunge</h3>
+    <p>If you'd rather sleep indoors, Silver Creek Plunge has A-frames from $69, family cabins from $89, and deluxe units from $119 per night. Limited availability — book early at <a href="https://www.silvercreekplunge.com" target="_blank" rel="noopener">silvercreekplunge.com</a>. Note these are paid directly to the Plunge and are not covered by the church.</p>
+
+    <div class="photos">
+      <figure><img src="/assets/creek.webp" alt="Silver Creek and meadow" /><figcaption>Group site setting</figcaption></figure>
+      <figure><img src="/assets/aframe.jpeg" alt="A-frame cabin" /><figcaption>A-frame cabin</figcaption></figure>
+      <figure><img src="/assets/cabin.png" alt="Cabin and fire ring" /><figcaption>Family cabin</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- THE AREA -->
+<section id="area">
+  <div class="wrap">
+    <p class="kicker">The Area</p>
+    <h2>Silver Creek &amp; the Plunge</h2>
+    <p>The campground sits in the Boise National Forest at about 4,490 feet, on Silver Creek. A short walk from camp brings you to Silver Creek Plunge — a family-run mountain camp with a geothermal pool, lodge, store, and rental cabins.</p>
+
+    <h3>Nearby and on-site</h3>
+    <ul>
+      <li><strong>Geothermal pool</strong> — spring-fed, around 100°F. Day passes are $10 adult / $8 kid, paid at the Plunge office.</li>
+      <li><strong>Hiking</strong> — Peace Creek, Silver Creek Summit, and Bull Creek trails leave from near camp.</li>
+      <li><strong>Fishing</strong> — Silver Creek is stocked with rainbow trout. Bring a pole and an Idaho license.</li>
+      <li><strong>Store</strong> — snacks, ice, firewood, propane, swimsuit and towel rentals at the Plunge.</li>
+      <li><strong>Stargazing</strong> — no light pollution. The Milky Way is clearly visible.</li>
+    </ul>
+
+    <div class="photos">
+      <figure><img src="/assets/pool-summer.jpeg" alt="Geothermal pool with mountain view" /><figcaption>Geothermal pool</figcaption></figure>
+      <figure><img src="/assets/pool-clean.webp" alt="Pool and lodge" /><figcaption>Pool &amp; lodge</figcaption></figure>
+      <figure><img src="/assets/lodge.jpeg" alt="The Plunge lodge" /><figcaption>The Plunge lodge</figcaption></figure>
+      <figure><img src="/assets/creek.webp" alt="Silver Creek" /><figcaption>Silver Creek</figcaption></figure>
+      <figure><img src="/assets/aframe.jpeg" alt="A-frame cabin" /><figcaption>A-frame cabin</figcaption></figure>
+      <figure><img src="/assets/cabin.png" alt="Family cabin and fire ring" /><figcaption>Cabin &amp; fire ring</figcaption></figure>
+    </div>
+
+    <h3>Property map</h3>
+    <p>Our group site sits east of the bridge, just north of the volleyball field. The pool, store, and parking are a short walk south.</p>
+    <figure class="map">
+      <img src="/assets/property-map.jpeg" alt="Silver Creek Plunge property map" />
+      <figcaption>Silver Creek Plunge property map</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- WHAT TO BRING -->
+<section id="bring">
+  <div class="wrap">
+    <p class="kicker">What to Bring</p>
+    <h2>Pack like you're camping</h2>
+    <p>Mountain nights drop into the 40s, even in August. Plan accordingly.</p>
+
+    <h3>Sleeping</h3>
+    <ul>
+      <li>Tent or RV</li>
+      <li>Sleeping bag rated for 40°F</li>
+      <li>Sleeping pad or air mattress</li>
+      <li>Pillow</li>
+    </ul>
+
+    <h3>Camp setup</h3>
+    <ul>
+      <li>Camp chair</li>
+      <li>Headlamp or flashlight</li>
+      <li>Cooler with ice</li>
+      <li>Trash bags — pack out what you pack in</li>
+      <li>Camp stove or grill if you want one</li>
+    </ul>
+
+    <h3>Food</h3>
+    <ul>
+      <li>Meals and snacks for your family</li>
+      <li>Water bottles — drinking water is available on site</li>
+      <li>Coffee setup</li>
+    </ul>
+
+    <h3>Clothing</h3>
+    <ul>
+      <li>Layers — warm jacket for evenings</li>
+      <li>Sturdy shoes for hiking</li>
+      <li>Swimsuit and towel for the pool or creek</li>
+      <li>Sunscreen and hat</li>
+    </ul>
+
+    <h3>Optional</h3>
+    <ul>
+      <li>Fishing pole and Idaho license</li>
+      <li>Bible</li>
+      <li>Instrument if you play one</li>
+      <li>Bug spray</li>
+    </ul>
+
+    <div class="note">
+      <strong>No showers on site</strong>
+      The pool and creek are it.
+    </div>
+  </div>
+</section>
+
+<!-- SIGN UP -->
+<section id="signup">
+  <div class="wrap">
+    <p class="kicker">Sign Up</p>
+    <h2>Let us know you're coming</h2>
+    <p>Please fill this out so we know who is coming and what setup to expect. Deadline: Sunday, August 16, 2026.</p>
+
+    <form id="signupForm">
+      <!-- Honeypot for bots -->
+      <div class="hp" aria-hidden="true">
+        <label for="website">Website</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <div class="form-row">
+        <div class="field">
+          <label for="name">Your name</label>
+          <input id="name" name="name" type="text" required />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel" />
+        </div>
+        <div class="field">
+          <label for="party">How many in your party</label>
+          <input id="party" name="party" type="number" min="1" max="20" value="1" required />
+        </div>
+      </div>
+      <div class="field">
+        <label for="setup">Where you'll stay</label>
+        <select id="setup" name="setup" required>
+          <option value="">Select one…</option>
+          <option value="tent">Tent in the group site</option>
+          <option value="rv">RV or trailer in the group site</option>
+          <option value="cabin">Cabin or A-frame (booked with the Plunge)</option>
+          <option value="undecided">Still deciding</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="notes">Anything we should know</label>
+        <textarea id="notes" name="notes" placeholder="Dietary restrictions, kids' ages, questions"></textarea>
+      </div>
+      <button class="submit" type="submit">Submit sign-up</button>
+    </form>
+
+    <div id="formStatus" class="form-status"></div>
+
+    <p style="margin-top:24px;font-size:14.5px;color:var(--ink-soft)">
+      Questions? Email <a href="mailto:bennettandkaris@gmail.com">bennettandkaris@gmail.com</a>.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Table Rock Church · Camping Trip 2026 · <a href="https://www.tablerock.church/" target="_blank" rel="noopener">tablerock.church</a>
+  </div>
+</footer>
+
+<script>
+  // Smooth scroll
+  document.querySelectorAll('nav.anchor a').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if (!el) return;
+      e.preventDefault();
+      const navH = document.querySelector('nav.anchor').offsetHeight;
+      window.scrollTo({ top: el.offsetTop - navH - 8, behavior: 'smooth' });
+      history.replaceState(null, '', '#' + id);
+    });
+  });
+
+  // Active link highlighting
+  const links = [...document.querySelectorAll('nav.anchor a')];
+  const sections = links.map(a => document.getElementById(a.getAttribute('href').slice(1)));
+  function syncActive() {
+    const navH = document.querySelector('nav.anchor').offsetHeight;
+    const y = window.scrollY + navH + 24;
+    let idx = 0;
+    sections.forEach((s, i) => { if (s && s.offsetTop <= y) idx = i; });
+    links.forEach((l, i) => l.classList.toggle('active', i === idx));
+  }
+  window.addEventListener('scroll', syncActive, { passive: true });
+  syncActive();
+
+  // Form submission
+  document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector('button.submit');
+    const status = document.getElementById('formStatus');
+
+    // Honeypot check
+    if (form.website.value) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+    status.className = 'form-status';
+    status.textContent = '';
+
+    const data = {
+      name: form.name.value.trim(),
+      email: form.email.value.trim(),
+      phone: form.phone.value.trim(),
+      party: parseInt(form.party.value, 10),
+      setup: form.setup.value,
+      notes: form.notes.value.trim(),
+    };
+
+    try {
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Something went wrong. Please try again.');
+      }
+
+      status.className = 'form-status success';
+      status.textContent = "You're signed up! We'll send a confirmation to " + data.email + ".";
+      form.reset();
+    } catch (err) {
+      status.className = 'form-status error';
+      status.textContent = err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Submit sign-up';
+    }
+  });
+</script>
+
+</body>
+</html>
