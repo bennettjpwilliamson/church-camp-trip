@@ -114,7 +114,7 @@
 
   /* Photos */
   .photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:18px 0}
-  .photos figure{margin:0;position:relative;overflow:hidden;aspect-ratio:1/1;background:var(--cream)}
+  .photos figure{margin:0;position:relative;overflow:hidden;aspect-ratio:4/3;background:var(--cream)}
   .photos img{width:100%;height:100%;object-fit:cover;display:block}
   .photos figcaption{
     position:absolute;left:8px;bottom:8px;
@@ -124,7 +124,7 @@
   }
   @media (max-width:560px){.photos{grid-template-columns:1fr 1fr}}
   .photos.two{grid-template-columns:1fr 1fr}
-  .photos.two figure{aspect-ratio:4/3}
+  .photos.two figure{aspect-ratio:3/2}
   @media (max-width:560px){.photos.two{grid-template-columns:1fr}}
 
   /* Map */
