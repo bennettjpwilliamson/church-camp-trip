@@ -9,19 +9,42 @@ const supabase = createClient(
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-function getSetupLabel(value) {
-  const labels = {
-    tent: 'Tent in the group site',
-    rv: 'RV or trailer in the group site',
-    cabin: 'Cabin or A-frame (booked with the Plunge)',
+// In-memory rate limit. Cold starts reset it (that's fine — this is just to
+// stop someone hammering the form from a single tab; real abuse would need
+// edge middleware).
+const rateLimit = new Map();
+const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
+const RATE_LIMIT_MAX = 5;            // 5 requests per minute per IP
+
+function rateLimited(ip) {
+  const now = Date.now();
+  const entry = rateLimit.get(ip) || { count: 0, resetAt: now + RATE_LIMIT_WINDOW_MS };
+  if (now > entry.resetAt) {
+    entry.count = 0;
+    entry.resetAt = now + RATE_LIMIT_WINDOW_MS;
+  }
+  entry.count += 1;
+  rateLimit.set(ip, entry);
+  return entry.count > RATE_LIMIT_MAX;
+}
+
+function setupLabel(value) {
+  return {
+    tent:      'Tent in the group site',
+    rv:        'RV or trailer in the group site',
+    cabin:     'Cabin or A-frame (booked with the Plunge)',
     undecided: 'Still deciding',
-  };
-  return labels[value] || value;
+  }[value] || value;
+}
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => (
+    { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
+  ));
 }
 
 async function appendToSheet(row) {
   if (!process.env.GOOGLE_SHEETS_ID || !process.env.GOOGLE_PRIVATE_KEY) return;
-
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -29,58 +52,64 @@ async function appendToSheet(row) {
     },
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
-
   const sheets = google.sheets({ version: 'v4', auth });
   await sheets.spreadsheets.values.append({
     spreadsheetId: process.env.GOOGLE_SHEETS_ID,
     range: 'Sheet1!A:G',
     valueInputOption: 'USER_ENTERED',
-    requestBody: {
-      values: [row],
-    },
+    requestBody: { values: [row] },
   });
 }
 
 async function sendNotificationEmail(data) {
-  const notificationEmail = process.env.NOTIFICATION_EMAIL;
-  if (!notificationEmail) return;
-
+  const to = process.env.NOTIFICATION_EMAIL;
+  if (!to) return;
+  const from = process.env.RESEND_DOMAIN
+    ? `Camp Trip <noreply@${process.env.RESEND_DOMAIN}>`
+    : 'Camp Trip <onboarding@resend.dev>';
   await resend.emails.send({
-    from: 'Camp Trip <noreply@' + (process.env.RESEND_DOMAIN || 'resend.dev') + '>',
-    to: [notificationEmail],
+    from,
+    to: [to],
+    replyTo: data.email,
     subject: `New sign-up: ${data.name} (party of ${data.party})`,
     html: `
-      <h2>New camping trip sign-up</h2>
+      <h2 style="font-family:sans-serif">New camping trip sign-up</h2>
       <table style="border-collapse:collapse;font-family:sans-serif;font-size:15px">
-        <tr><td style="padding:6px 12px;font-weight:bold">Name</td><td style="padding:6px 12px">${data.name}</td></tr>
-        <tr><td style="padding:6px 12px;font-weight:bold">Email</td><td style="padding:6px 12px">${data.email}</td></tr>
-        <tr><td style="padding:6px 12px;font-weight:bold">Phone</td><td style="padding:6px 12px">${data.phone || '—'}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:bold">Name</td><td style="padding:6px 12px">${escapeHtml(data.name)}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:bold">Email</td><td style="padding:6px 12px">${escapeHtml(data.email)}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:bold">Phone</td><td style="padding:6px 12px">${escapeHtml(data.phone || '—')}</td></tr>
         <tr><td style="padding:6px 12px;font-weight:bold">Party size</td><td style="padding:6px 12px">${data.party}</td></tr>
-        <tr><td style="padding:6px 12px;font-weight:bold">Staying</td><td style="padding:6px 12px">${getSetupLabel(data.setup)}</td></tr>
-        <tr><td style="padding:6px 12px;font-weight:bold">Notes</td><td style="padding:6px 12px">${data.notes || '—'}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:bold">Staying</td><td style="padding:6px 12px">${escapeHtml(setupLabel(data.setup))}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:bold;vertical-align:top">Notes</td><td style="padding:6px 12px;white-space:pre-wrap">${escapeHtml(data.notes || '—')}</td></tr>
       </table>
     `,
   });
 }
 
 async function sendConfirmationEmail(data) {
+  // Only attempt if a domain is verified — otherwise Resend will 403 on every
+  // non-account-owner address. The env flag flips this on once DNS is set.
+  if (!process.env.RESEND_DOMAIN) return { skipped: 'no verified domain' };
+  const from = `Table Rock Camp Trip <noreply@${process.env.RESEND_DOMAIN}>`;
   await resend.emails.send({
-    from: 'Table Rock Camp Trip <noreply@' + (process.env.RESEND_DOMAIN || 'resend.dev') + '>',
+    from,
     to: [data.email],
     subject: "You're signed up for the camping trip!",
     html: `
       <div style="font-family:sans-serif;max-width:520px;margin:0 auto;color:#1A1F2A">
-        <h2 style="margin-bottom:4px">You're in, ${data.name}!</h2>
+        <h2 style="margin-bottom:4px">You're in, ${escapeHtml(data.name)}!</h2>
         <p style="color:#3F4754">We've got you down for the Table Rock Church camping trip at Silver Creek.</p>
         <table style="border-collapse:collapse;font-size:15px;margin:16px 0">
           <tr><td style="padding:6px 12px;font-weight:bold">Dates</td><td style="padding:6px 12px">August 28–30, 2026</td></tr>
           <tr><td style="padding:6px 12px;font-weight:bold">Party size</td><td style="padding:6px 12px">${data.party}</td></tr>
-          <tr><td style="padding:6px 12px;font-weight:bold">Staying</td><td style="padding:6px 12px">${getSetupLabel(data.setup)}</td></tr>
+          <tr><td style="padding:6px 12px;font-weight:bold">Staying</td><td style="padding:6px 12px">${escapeHtml(setupLabel(data.setup))}</td></tr>
         </table>
-        <p style="color:#3F4754;font-size:14px">Questions? Reply to <a href="mailto:bennettandkaris@gmail.com">bennettandkaris@gmail.com</a>.</p>
+        <p style="color:#3F4754;font-size:14px">Don't forget: Venmo <strong>@TableRockChurch</strong> with "campout" in the note ($10/person or $20/family).</p>
+        <p style="color:#3F4754;font-size:14px">Questions? Reply to this email.</p>
       </div>
     `,
   });
+  return { ok: true };
 }
 
 export default async function handler(req, res) {
@@ -88,71 +117,130 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email, phone, party, setup, notes } = req.body;
-
-  // Server-side validation
-  if (!name || !email || !party || !setup) {
-    return res.status(400).json({ error: 'Please fill in all required fields.' });
+  // Rate limit by IP
+  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || 'unknown';
+  if (rateLimited(ip)) {
+    return res.status(429).json({ error: 'Too many requests. Give it a minute and try again.' });
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  let body = req.body;
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body); } catch { body = {}; }
+  }
+  const { name, email, phone, party, setup, notes } = body || {};
+
+  // Validation
+  if (!name || typeof name !== 'string' || name.trim().length < 2) {
+    return res.status(400).json({ error: 'Please enter your name.' });
+  }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ error: 'Please enter a valid email address.' });
   }
-
-  if (party < 1 || party > 20) {
+  const partyN = parseInt(party, 10);
+  if (!partyN || partyN < 1 || partyN > 20) {
     return res.status(400).json({ error: 'Party size must be between 1 and 20.' });
   }
-
   const validSetups = ['tent', 'rv', 'cabin', 'undecided'];
   if (!validSetups.includes(setup)) {
-    return res.status(400).json({ error: 'Please select a valid lodging option.' });
+    return res.status(400).json({ error: 'Please pick where you\'ll stay.' });
   }
+  if (notes && String(notes).length > 1000) {
+    return res.status(400).json({ error: 'Notes are too long (1000 character max).' });
+  }
+  if (name.length > 120 || email.length > 200 || (phone && phone.length > 40)) {
+    return res.status(400).json({ error: 'One of your fields is too long. Please shorten it.' });
+  }
+
+  const cleaned = {
+    name: name.trim(),
+    email: email.trim().toLowerCase(),
+    phone: (phone || '').toString().trim() || null,
+    party: partyN,
+    setup,
+    notes: (notes || '').toString().trim() || null,
+  };
 
   const timestamp = new Date().toISOString();
 
   try {
-    // 1. Save to Supabase (primary datastore)
-    const { error: dbError } = await supabase
+    // Upsert: if the email already signed up, UPDATE instead of duplicating.
+    // Lets someone resubmit to fix a typo without creating duplicates.
+    const { data: existing, error: lookupError } = await supabase
       .from('signups')
-      .insert({
-        name,
-        email,
-        phone: phone || null,
-        party_size: party,
-        setup,
-        notes: notes || null,
-        created_at: timestamp,
-      });
-
-    if (dbError) {
-      console.error('Supabase insert error:', dbError);
-      return res.status(500).json({ error: 'Failed to save your sign-up. Please try again.' });
+      .select('id')
+      .eq('email', cleaned.email)
+      .maybeSingle();
+    if (lookupError) {
+      console.error('Supabase lookup error:', lookupError);
+      return res.status(500).json({ error: 'Could not save your sign-up. Please try again.' });
     }
 
-    // 2. Append to Google Sheet (best-effort)
+    if (existing) {
+      const { error: updateError } = await supabase
+        .from('signups')
+        .update({
+          name: cleaned.name,
+          phone: cleaned.phone,
+          party_size: cleaned.party,
+          setup: cleaned.setup,
+          notes: cleaned.notes,
+        })
+        .eq('id', existing.id);
+      if (updateError) {
+        console.error('Supabase update error:', updateError);
+        return res.status(500).json({ error: 'Could not save your sign-up. Please try again.' });
+      }
+    } else {
+      const { error: insertError } = await supabase
+        .from('signups')
+        .insert({
+          name: cleaned.name,
+          email: cleaned.email,
+          phone: cleaned.phone,
+          party_size: cleaned.party,
+          setup: cleaned.setup,
+          notes: cleaned.notes,
+          created_at: timestamp,
+        });
+      if (insertError) {
+        console.error('Supabase insert error:', insertError);
+        return res.status(500).json({ error: 'Could not save your sign-up. Please try again.' });
+      }
+    }
+
+    // Google Sheet (best-effort)
     try {
-      await appendToSheet([timestamp, name, email, phone || '', party, getSetupLabel(setup), notes || '']);
-    } catch (sheetErr) {
-      console.error('Google Sheets append error:', sheetErr);
+      await appendToSheet([timestamp, cleaned.name, cleaned.email, cleaned.phone || '', cleaned.party, setupLabel(cleaned.setup), cleaned.notes || '']);
+    } catch (e) {
+      console.error('Google Sheets append error:', e?.message || e);
     }
 
-    // 3. Send notification email to organizer (best-effort)
+    // Notification to organizer (best-effort)
+    let notificationSent = false;
     try {
-      await sendNotificationEmail({ name, email, phone, party, setup, notes });
-    } catch (emailErr) {
-      console.error('Notification email error:', emailErr);
+      await sendNotificationEmail(cleaned);
+      notificationSent = true;
+    } catch (e) {
+      console.error('Notification email error:', e?.message || e);
     }
 
-    // 4. Send confirmation email to signer (best-effort)
+    // Confirmation to signer (only if domain verified)
+    let confirmationSent = false;
     try {
-      await sendConfirmationEmail({ name, email, party, setup });
-    } catch (emailErr) {
-      console.error('Confirmation email error:', emailErr);
+      const result = await sendConfirmationEmail(cleaned);
+      if (result?.ok) confirmationSent = true;
+    } catch (e) {
+      console.error('Confirmation email error:', e?.message || e);
     }
 
-    return res.status(200).json({ success: true });
-  } catch (err) {
-    console.error('Signup handler error:', err);
+    return res.status(200).json({
+      success: true,
+      updated: !!existing,
+      confirmationSent,
+      notificationSent,
+    });
+  } catch (e) {
+    console.error('Signup handler error:', e);
     return res.status(500).json({ error: 'Something went wrong. Please try again.' });
   }
 }

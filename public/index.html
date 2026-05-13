@@ -7,7 +7,7 @@
 <meta name="description" content="Table Rock Church camping trip at Silver Creek Campground, August 28–30, 2026. Sign up to join us for a weekend of fellowship in the mountains." />
 <meta property="og:title" content="Church Camping Trip — August 28–30, 2026" />
 <meta property="og:description" content="Table Rock Church camping trip at Silver Creek Campground. A weekend together in the woods." />
-<meta property="og:image" content="/assets/cabin.png" />
+<meta property="og:image" content="/assets/cabin.jpg" />
 <meta property="og:type" content="website" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛺</text></svg>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -37,7 +37,7 @@
   .hero{
     position:relative;
     height:clamp(280px, 42vw, 460px);
-    background:#1a1f2a url("/assets/cabin.png") center/cover no-repeat;
+    background:#1a1f2a url("/assets/cabin.jpg") center/cover no-repeat;
     color:var(--paper);
     display:flex;align-items:flex-end;
     border-bottom:4px solid var(--accent-red);
@@ -136,8 +136,9 @@
   form{max-width:560px}
   .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
   .field label{font-family:var(--font-display);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
-  .field input,.field select,.field textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--rule);border-radius:2px;background:var(--paper)}
-  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent-red)}
+  .field input,.field select,.field textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--rule);border-radius:2px;background:var(--paper);transition:border-color 120ms ease, box-shadow 120ms ease}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent-red);box-shadow:0 0 0 3px rgba(230,59,46,0.18)}
+  .field input:invalid:not(:placeholder-shown),.field select:invalid:not(:focus){border-color:var(--accent-red)}
   .field textarea{min-height:88px;resize:vertical}
   .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   @media (max-width:560px){.form-row{grid-template-columns:1fr;gap:0}}
@@ -145,10 +146,15 @@
     background:var(--ink);color:var(--paper);border:none;
     padding:14px 28px;font-family:var(--font-display);font-weight:700;
     font-size:13px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
-    transition:background 150ms ease;
+    transition:background 150ms ease, box-shadow 150ms ease;
   }
   button.submit:hover{background:#000}
+  button.submit:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(230,59,46,0.5)}
   button.submit:disabled{opacity:.6;cursor:not-allowed}
+
+  /* Visible focus on nav links */
+  nav.anchor a:focus-visible{outline:2px solid var(--accent-red);outline-offset:-2px}
+  a:focus-visible{outline:2px solid var(--accent-red);outline-offset:2px;border-radius:2px}
 
   /* Form states */
   .form-status{margin-top:16px;padding:14px 18px;font-size:15px;display:none}
@@ -234,9 +240,9 @@
     <p>Silver Creek Plunge has A-frames starting around $69/night and family cabins from $89. Availability is limited, so book early if you're interested — <a href="https://www.silvercreekplunge.com" target="_blank" rel="noopener">silvercreekplunge.com</a>. These are booked and paid directly with the Plunge, separate from the church reservation.</p>
 
     <div class="photos">
-      <figure><img src="/assets/campground-sign.webp" alt="Silver Creek Campground entrance in lodgepole pines" /><figcaption>Silver Creek Campground</figcaption></figure>
-      <figure><img src="/assets/lodge.jpeg" alt="A-frame cabin in the forest" /><figcaption>A-frame cabin</figcaption></figure>
-      <figure><img src="/assets/pool-summer.jpeg" alt="Family cabin with fire ring" /><figcaption>Family cabin</figcaption></figure>
+      <figure><img src="/assets/campground-sign.webp" alt="Silver Creek Campground entrance in lodgepole pines" width="1440" height="810" loading="lazy" /><figcaption>Silver Creek Campground</figcaption></figure>
+      <figure><img src="/assets/lodge.jpeg" alt="A-frame cabin in the forest" width="516" height="387" loading="lazy" /><figcaption>A-frame cabin</figcaption></figure>
+      <figure><img src="/assets/pool-summer.jpeg" alt="Family cabin with fire ring" width="340" height="588" loading="lazy" /><figcaption>Family cabin</figcaption></figure>
     </div>
   </div>
 </section>
@@ -258,18 +264,18 @@
     </ul>
 
     <div class="photos">
-      <figure><img src="/assets/aframe.jpeg" alt="The Plunge lodge with the geothermal pool" /><figcaption>Pool &amp; lodge</figcaption></figure>
-      <figure><img src="/assets/creek.webp" alt="Geothermal pool with cabins behind" /><figcaption>Geothermal pool</figcaption></figure>
-      <figure><img src="/assets/pool-clean.webp" alt="Silver Creek and the meadow" /><figcaption>Silver Creek</figcaption></figure>
-      <figure><img src="/assets/campground-sunset.webp" alt="Mountain view at dusk over Peace Valley" /><figcaption>Peace Valley</figcaption></figure>
-      <figure><img src="/assets/lodge.jpeg" alt="A-frame cabin in the forest" /><figcaption>A-frame cabin</figcaption></figure>
-      <figure><img src="/assets/pool-summer.jpeg" alt="Family cabin with fire ring" /><figcaption>Family cabin</figcaption></figure>
+      <figure><img src="/assets/aframe.jpeg" alt="The Plunge lodge with the geothermal pool" width="800" height="480" loading="lazy" /><figcaption>Pool &amp; lodge</figcaption></figure>
+      <figure><img src="/assets/creek.webp" alt="Geothermal pool with cabins behind" width="1600" height="1200" loading="lazy" /><figcaption>Geothermal pool</figcaption></figure>
+      <figure><img src="/assets/pool-clean.webp" alt="Silver Creek and the meadow" width="700" height="526" loading="lazy" /><figcaption>Silver Creek</figcaption></figure>
+      <figure><img src="/assets/campground-sunset.webp" alt="Mountain view at dusk over Peace Valley" width="700" height="525" loading="lazy" /><figcaption>Peace Valley</figcaption></figure>
+      <figure><img src="/assets/lodge.jpeg" alt="A-frame cabin in the forest" width="516" height="387" loading="lazy" /><figcaption>A-frame cabin</figcaption></figure>
+      <figure><img src="/assets/pool-summer.jpeg" alt="Family cabin with fire ring" width="340" height="588" loading="lazy" /><figcaption>Family cabin</figcaption></figure>
     </div>
 
     <h3>Property map</h3>
     <p>Our group site sits east of the bridge, just north of the volleyball field. The pool, store, and parking are a short walk south.</p>
     <figure class="map">
-      <img src="/assets/property-map.jpeg" alt="Silver Creek Plunge property map" />
+      <img src="/assets/property-map.jpeg" alt="Silver Creek Plunge property map" width="1200" height="1985" loading="lazy" />
       <figcaption>Silver Creek Plunge property map</figcaption>
     </figure>
   </div>
@@ -333,11 +339,11 @@
     <p>Fill this out so we know who's coming and what to expect. Please sign up by Sunday, August 16.</p>
     <p>After signing up, please Venmo <strong>@TableRockChurch</strong> and include "campout" in the note — $10 per person or $20 per family.</p>
 
-    <form id="signupForm">
-      <!-- Honeypot for bots -->
+    <form id="signupForm" novalidate>
+      <!-- Honeypot for bots — hidden from users and screen readers -->
       <div class="hp" aria-hidden="true">
-        <label for="website">Website</label>
-        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+        <label for="website">Leave this blank</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
       </div>
 
       <div class="form-row">
@@ -372,14 +378,17 @@
       </div>
       <div class="field">
         <label for="notes">Anything we should know</label>
-        <textarea id="notes" name="notes" placeholder="Dietary restrictions, kids' ages, questions"></textarea>
+        <textarea id="notes" name="notes" placeholder="Dietary restrictions, kids' ages, questions" maxlength="1000"></textarea>
       </div>
-      <button class="submit" type="submit">Submit sign-up</button>
+      <button class="submit" type="submit">Sign me up</button>
     </form>
 
-    <div id="formStatus" class="form-status"></div>
+    <div id="formStatus" class="form-status" role="status" aria-live="polite"></div>
 
-    <p style="margin-top:24px;font-size:14.5px;color:var(--ink-soft)">
+    <p style="margin-top:24px;font-size:14px;color:var(--ink-mute)">
+      We use your contact info just to keep you posted on this trip. Nothing else.
+    </p>
+    <p style="margin-top:4px;font-size:14.5px;color:var(--ink-soft)">
       Questions? Email <a href="mailto:bennettandkaris@gmail.com">bennettandkaris@gmail.com</a>.
     </p>
   </div>
@@ -449,20 +458,29 @@
         body: JSON.stringify(data),
       });
 
+      const result = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || 'Something went wrong. Please try again.');
+        throw new Error(result.error || 'Something went wrong. Please try again.');
       }
 
+      const baseMsg = result.updated
+        ? "We updated your sign-up. See you in August!"
+        : "You're signed up. See you in August!";
+      const venmoNote = " Don't forget to Venmo @TableRockChurch with \"campout\" in the note.";
+      const confirmNote = result.confirmationSent
+        ? " A confirmation is on its way to " + data.email + "."
+        : "";
+
       status.className = 'form-status success';
-      status.textContent = "You're signed up! We'll send a confirmation to " + data.email + ".";
+      status.textContent = baseMsg + confirmNote + venmoNote;
       form.reset();
+      status.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } catch (err) {
       status.className = 'form-status error';
       status.textContent = err.message;
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Submit sign-up';
+      btn.textContent = 'Sign me up';
     }
   });
 </script>
