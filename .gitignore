@@ -1,6 +1,9 @@
-node_modules
+*-service-account*.json
+.claude/
 .env
+.env*.local
 .env.local
 .vercel
-.env*.local
-.claude/
+Church Camp Trip Data.json
+gcp-key.json
+node_modules
