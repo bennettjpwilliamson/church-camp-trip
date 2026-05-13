@@ -1,6 +1,5 @@
 // Diagnostic endpoint — checks that each external service is reachable
 // and configured correctly. Returns a JSON report. NO secrets returned.
-// Protected by a query-string token so randoms can't hit it.
 
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
@@ -10,6 +9,8 @@ export default async function handler(req, res) {
   if (token !== process.env.DIAGNOSTIC_TOKEN) {
     return res.status(404).end();
   }
+
+  const sendTest = req.query.sendTest === '1';
 
   const report = {
     timestamp: new Date().toISOString(),
@@ -22,7 +23,7 @@ export default async function handler(req, res) {
       GOOGLE_SHEETS_ID: process.env.GOOGLE_SHEETS_ID ? 'set' : 'not set (sheets disabled)',
     },
     supabase: { ok: false, error: null, signupCount: null, latestSignup: null },
-    resend: { ok: false, error: null, domains: null },
+    resend: { ok: false, error: null, domains: null, sendTest: null },
   };
 
   // Test Supabase
@@ -48,7 +49,7 @@ export default async function handler(req, res) {
     report.supabase.error = 'Supabase env vars missing';
   }
 
-  // Test Resend — list domains to confirm key is valid and check verification status
+  // Test Resend
   if (process.env.RESEND_API_KEY) {
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);
@@ -62,6 +63,24 @@ export default async function handler(req, res) {
           status: d.status,
           region: d.region,
         }));
+      }
+
+      // Optional: actually try sending an email
+      if (sendTest && process.env.NOTIFICATION_EMAIL) {
+        const from = process.env.RESEND_DOMAIN
+          ? `Camp Trip <noreply@${process.env.RESEND_DOMAIN}>`
+          : 'Camp Trip <onboarding@resend.dev>';
+        const { data: sendData, error: sendError } = await resend.emails.send({
+          from,
+          to: [process.env.NOTIFICATION_EMAIL],
+          subject: 'Diagnostic test — please ignore',
+          html: '<p>This is an automated test from the diagnostic endpoint. If you got this, Resend → your inbox is working.</p>',
+        });
+        if (sendError) {
+          report.resend.sendTest = { ok: false, error: sendError.message || JSON.stringify(sendError), from };
+        } else {
+          report.resend.sendTest = { ok: true, messageId: sendData?.id, from, to: process.env.NOTIFICATION_EMAIL };
+        }
       }
     } catch (e) {
       report.resend.error = e.message;
