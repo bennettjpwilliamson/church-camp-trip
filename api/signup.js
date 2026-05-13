@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import { google } from 'googleapis';
 
 const supabase = createClient(
@@ -7,14 +7,28 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 );
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Gmail SMTP — sends from GMAIL_USER using an App Password.
+// Free tier allows ~500 outbound emails/day, far more than we'll need.
+let mailerCache = null;
+function getMailer() {
+  if (mailerCache) return mailerCache;
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) return null;
+  mailerCache = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
+  return mailerCache;
+}
 
 // In-memory rate limit. Cold starts reset it (that's fine — this is just to
 // stop someone hammering the form from a single tab; real abuse would need
 // edge middleware).
 const rateLimit = new Map();
-const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
-const RATE_LIMIT_MAX = 5;            // 5 requests per minute per IP
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 5;
 
 function rateLimited(ip) {
   const now = Date.now();
@@ -62,14 +76,13 @@ async function appendToSheet(row) {
 }
 
 async function sendNotificationEmail(data) {
+  const mailer = getMailer();
   const to = process.env.NOTIFICATION_EMAIL;
-  if (!to) return;
-  const from = process.env.RESEND_DOMAIN
-    ? `Camp Trip <noreply@${process.env.RESEND_DOMAIN}>`
-    : 'Camp Trip <onboarding@resend.dev>';
-  await resend.emails.send({
-    from,
-    to: [to],
+  if (!mailer || !to) return;
+  const from = process.env.GMAIL_USER;
+  await mailer.sendMail({
+    from: `Camp Trip Signups <${from}>`,
+    to,
     replyTo: data.email,
     subject: `New sign-up: ${data.name} (party of ${data.party})`,
     html: `
@@ -87,13 +100,13 @@ async function sendNotificationEmail(data) {
 }
 
 async function sendConfirmationEmail(data) {
-  // Only attempt if a domain is verified — otherwise Resend will 403 on every
-  // non-account-owner address. The env flag flips this on once DNS is set.
-  if (!process.env.RESEND_DOMAIN) return { skipped: 'no verified domain' };
-  const from = `Table Rock Camp Trip <noreply@${process.env.RESEND_DOMAIN}>`;
-  await resend.emails.send({
-    from,
-    to: [data.email],
+  const mailer = getMailer();
+  if (!mailer) return { skipped: 'no mailer configured' };
+  const from = process.env.GMAIL_USER;
+  await mailer.sendMail({
+    from: `Table Rock Camp Trip <${from}>`,
+    to: data.email,
+    replyTo: from,
     subject: "You're signed up for the camping trip!",
     html: `
       <div style="font-family:sans-serif;max-width:520px;margin:0 auto;color:#1A1F2A">
@@ -117,7 +130,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Rate limit by IP
   const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || 'unknown';
   if (rateLimited(ip)) {
     return res.status(429).json({ error: 'Too many requests. Give it a minute and try again.' });
@@ -129,7 +141,6 @@ export default async function handler(req, res) {
   }
   const { name, email, phone, party, setup, notes } = body || {};
 
-  // Validation
   if (!name || typeof name !== 'string' || name.trim().length < 2) {
     return res.status(400).json({ error: 'Please enter your name.' });
   }
@@ -163,8 +174,6 @@ export default async function handler(req, res) {
   const timestamp = new Date().toISOString();
 
   try {
-    // Upsert: if the email already signed up, UPDATE instead of duplicating.
-    // Lets someone resubmit to fix a typo without creating duplicates.
     const { data: existing, error: lookupError } = await supabase
       .from('signups')
       .select('id')
@@ -208,14 +217,12 @@ export default async function handler(req, res) {
       }
     }
 
-    // Google Sheet (best-effort)
     try {
       await appendToSheet([timestamp, cleaned.name, cleaned.email, cleaned.phone || '', cleaned.party, setupLabel(cleaned.setup), cleaned.notes || '']);
     } catch (e) {
       console.error('Google Sheets append error:', e?.message || e);
     }
 
-    // Notification to organizer (best-effort)
     let notificationSent = false;
     try {
       await sendNotificationEmail(cleaned);
@@ -224,7 +231,6 @@ export default async function handler(req, res) {
       console.error('Notification email error:', e?.message || e);
     }
 
-    // Confirmation to signer (only if domain verified)
     let confirmationSent = false;
     try {
       const result = await sendConfirmationEmail(cleaned);
